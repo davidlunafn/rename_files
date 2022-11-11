@@ -7,10 +7,9 @@ version: 1.1
 '''
 
 import os
-import time
-from datetime import timedelta
 import argparse
 from pathlib import Path
+from tqdm import tqdm
 
 
 argparser = argparse.ArgumentParser(description='Cambiar extension de archivos')
@@ -18,27 +17,20 @@ argparser.add_argument('-p', '--path',required=True, help='Ruta donde se encuent
 
 args = argparser.parse_args()
 
+files = list(Path(args.path).rglob('*.*'))
 
-formatos = ['wav', 'WAV']
-Numero_grab = 0
-print(f"Inventorying Files...")
-start_time = time.time()
-for (root, dirs, file) in os.walk(args.path):
+for file  in tqdm(files):
+    sfile = str(file).split('/')
+    pref = sfile[-2]
+    filename = file.name
+    ext = filename.split('.')[-1]
 
-    if len(dirs) == 0:
-        files = list(Path(root).rglob('*.{}'.format(formatos[1])))
+    os.rename(file, file.with_name(f'{pref}_{file.name}'))
 
-        #Cambiar extension    
-        for x in files:
-            os.rename(x, x.with_suffix(f'.{formatos[0]}'))
-        
-        files = list(Path(root).rglob('*.{}'.format(formatos[0])))
+    if ext != ext.lower():
+        new_file = file.parent.joinpath(f'{pref}_{file.name}')
+        os.rename(new_file, new_file.with_suffix(f'.{ext.lower()}'))
 
-        #Agregar prefijo
-        for x in files:
-            os.rename(x, x.with_name(f'{os.path.basename(root)}_{x.name}'))
-            Numero_grab = Numero_grab + 1
 
-print(f"{Numero_grab} files found")
-print('realizado')
-print(f"Execution Time {str(timedelta(seconds=time.time() - start_time))}")
+
+
