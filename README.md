@@ -23,12 +23,6 @@ Despues de ejecutar el comando debemos verificar que el ambiente se activo, para
 ```python
 (algoritmoExt) $ >>
 ```
-Despues de activar el ambiente instalamos las librerias necesarias (solo se debe realizar una vez)
-
-
-```python
-pip install -r requirements.txt
-```
 
 
 
