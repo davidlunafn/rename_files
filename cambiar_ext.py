@@ -15,6 +15,7 @@ from pathlib import Path
 
 argparser = argparse.ArgumentParser(description='Cambiar extension de archivos')
 argparser.add_argument('-p', '--path',required=True, help='Ruta donde se encuentran los archivos')
+argparser.add_argument('-d', '--delete_prefix',required=False, default=False, help='Borrar prefijo de los audios')
 
 args = argparser.parse_args()
 
@@ -22,20 +23,23 @@ Numero_grab = 0
 print(f"Inventorying Files...")
 start_time = time.time()
 for (root, dirs, file) in os.walk(args.path):
-
     if len(dirs) == 0:
         files = list(Path(root).rglob('*.*'))
 
-        for x in files:
-            filename = x.name
-            ext = filename.split('.')[-1]
-
-            os.rename(x, x.with_name(f'{os.path.basename(root)}_{x.name}'))
-
-            if ext != ext.lower():
-                new_file = x.parent.joinpath(f'{os.path.basename(root)}_{x.name}')
-                os.rename(new_file, new_file.with_suffix(f'.{ext.lower()}'))
-            Numero_grab = Numero_grab + 1
+        if args.delete_prefix == False:
+            for x in files:
+                filename = x.name
+                ext = filename.split('.')[-1]
+                new_name =  x.with_name(f'{os.path.basename(root)}_{x.name}').with_suffix(f'.{ext.lower()}')
+                os.rename(x,new_name)
+                Numero_grab = Numero_grab + 1
+        else:
+            for x in files:
+                filename = x.name
+                base_name = '_'.join(filename.split('_')[-2:])
+                new_name = x.with_name(base_name)
+                os.rename(x,new_name)
+                Numero_grab = Numero_grab + 1
 
 print(f"{Numero_grab} files found")
 print('realizado')
